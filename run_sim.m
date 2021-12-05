@@ -28,10 +28,10 @@ WATER_SUCESS = zeros(size(TRANSMIT_POWER));
 
 for ii = 1:length(TRANSMIT_POWER)
     % Run simulation for Fat
-    [sucess_f, bits_f, ~, B_f, M_f, N_f, D_f] = run_sim(bit_sequence, TRANSMIT_POWER(ii), max_noise_amp, attenuation_fat);
+    [sucess_f, bits_f, ~, B_f, M_f, N_f, D_f] = runtrial_sim(bit_sequence, TRANSMIT_POWER(ii), max_noise_amp, attenuation_fat);
     
     % Run simulation for Water
-    [sucess_w, bits_w, t, B_w, M_w, N_w, D_w] = run_sim(bit_sequence, TRANSMIT_POWER(ii), max_noise_amp, attenuation_water);
+    [sucess_w, bits_w, t, B_w, M_w, N_w, D_w] = runtrial_sim(bit_sequence, TRANSMIT_POWER(ii), max_noise_amp, attenuation_water);
     
     % Append to succes values
     FAT_SUCESS(ii) = sucess_f;
@@ -52,6 +52,8 @@ for ii = 1:length(TRANSMIT_POWER)
         axis tight
         ylim([-0.5 1.5]);
         title('Original Bit Sequence')
+        xlabel('Time (s)')
+        ylabel('Bit Value (a.u.)')
 
         subplot 412
         plot(t, M_f)
@@ -59,6 +61,8 @@ for ii = 1:length(TRANSMIT_POWER)
         grid on
         axis tight
         title('AM Transmission')
+        xlabel('Time (s)')
+        ylabel('Power (mW)')
 
         subplot 413
         plot(t, N_f)
@@ -66,6 +70,8 @@ for ii = 1:length(TRANSMIT_POWER)
         grid on
         axis tight
         title('AM Transmission Sequence After Noise And Attenuation')
+        xlabel('Time (s)')
+        ylabel('Power (mW)')
 
         subplot 414
         plot(t, D_f)
@@ -73,6 +79,8 @@ for ii = 1:length(TRANSMIT_POWER)
         grid on
         axis tight
         title('Recovered Bit Sequence after Demodulation')
+        xlabel('Time (s)')
+        ylabel('Bit Value (a.u.)')
     end
 end
 
