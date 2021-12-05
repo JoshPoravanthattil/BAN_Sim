@@ -1,0 +1,56 @@
+close all; clear; clc;
+
+%% ECE 1150 Final Simulation
+% 12.04.2021
+% Andrew, Josh, Lucio
+
+% Simulation of signal transmisison through tissues of the human body (fat
+% and water).
+
+%% CONSTANTS DEFINITIONS
+bit_sequence = [0 1 1 0 1 0 1 1 0];
+max_noise_amp = 5.1;
+attenuation_fat = 85.11;
+attenuation_water = 741.31;
+
+Ptx_sim = [10 100 300 500
+%% END CHANGE
+
+[sucess, bits, t, B, M, N, D] = run_sim(bit_sequence, Ptx, max_noise_amp, attenuation);
+
+% Plot Results
+subplot 411
+plot(t, B)
+fatlines(1.5)
+grid on
+axis tight
+ylim([-1.5 1.5]);
+title('Original Bit Sequence')
+
+subplot 412
+plot(t, M)
+fatlines(1.5)
+grid on
+axis tight
+title('AM Bit Sequence')
+
+subplot 413
+plot(t, N)
+fatlines(1.5)
+grid on
+axis tight
+title('AM Bit Sequence After Noise + Attenuation')
+
+subplot 414
+plot(t, D)
+fatlines(1.5)
+grid on
+axis tight
+title('Recovered Bit Sequence after Demodulation')
+
+% Print comparison to input and output
+disp('Input Bit: ')
+disp(num2str(bits(:, 1)'))
+disp('Output Bit: ')
+disp(num2str(bits(:, 2)'))
+disp(['Sucess: ', num2str(sucess)])
