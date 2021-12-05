@@ -1,64 +1,43 @@
-close all; clear; clc;
+function [sucess, bits, t,orig_seq, am_wave, am_dist, demod_am] = run_sim(bit_seq, Ptx, noise_amp, atten)
+    %RUN_SIM Funciton to run the simulation for BAN transmit power
+    %   
+    %   Note : bit time is held constant at 0.1s
+    %
+    %   Inupts:
+    %       bit_seq - the input bit sequence to send
+    %       Ptx - transmission power
+    %       noise_amp - maximum amplitude of AWGN
+    %       atten - factor of attenuation
+    %
+    %   Outputs:
+    %       sucess - logical (do input and recovered match)
+    %       bits - Nx2 array detaling [input_seq; output_seq]
+    %       t - time vector
+    %       orig_seq - Timeseries of original bit sequence
+    %       am_wave - Timesereis of the AM wave
+    %       am_dist - (AM/attenuation) + noise
+    %       demod_am - demodulated AM wave
+    %
+    
+    %% Function Start
+    Tb = 0.1;
+    
+    % Assign bit_seq to bits array
+    bits(:, 1) = bit_seq;
+    
+    % Use amod function to generate modulated output (10mW Ptx)
+    [am_wave, t, orig_seq] = amod(bit_seq, Tb, Ptx);
 
-%% ECE 1150 Final Simulation
-% 12.04.2021
-% Andrew, Josh, Lucio
+    % Attenuate the signal by factor
+    M_att = am_wave/atten;
 
-%% Sample simulation
+    % Add gaussian noise to modulated signal with max amplitude of 2dBm
+    am_dist = add_awgn(M_att, noise_amp);
 
-% Define the bit sequence
-%% CHANGE THIS
-bit_sequence = [0 1 1 0 1 0 1 1 0];
-Tb = 0.1;
-max_noise_amp = 2;
-attenuation = 3;
+    % Demodulate and try to recover sequence as bit array
+    [bits(:, 2), demod_am] = demod(t, am_dist, Tb);
+    
+    % Output the state of success
+    sucess = all(bits(:, 1) == bits(:, 2));
+end
 
-%% END CHANGE
-
-% Use amod function to generate modulated output (10dBm Ptx)
-[M, t, B] = amod(bit_sequence, Tb, 10);
-
-% Attenuate the signal by factor
-M = M/attenuation;
-
-% Add gaussian noise to modulated signal with max amplitude of 2dBm
-N = add_awgn(M, max_noise_amp);
-
-% Demodulate and try to recover sequence as bit array
-[recovered_bits, D] = demod(t, N, Tb);
-
-% Plot Results
-subplot 411
-plot(t, B)
-fatlines(1.5)
-grid on
-axis tight
-ylim([-1.5 1.5]);
-title('Original Bit Sequence')
-
-subplot 412
-plot(t, M)
-fatlines(1.5)
-grid on
-axis tight
-title('AM Bit Sequence')
-
-subplot 413
-plot(t, N)
-fatlines(1.5)
-grid on
-axis tight
-title('AM Bit Sequence After Noise + Attenuation')
-
-subplot 414
-plot(t, D)
-fatlines(1.5)
-grid on
-axis tight
-title('Recovered Bit Sequence after Demodulation')
-
-% Print comparison to input and output
-disp('Input Bit: ')
-disp(num2str(bit_sequence))
-disp('Output Bit: ')
-disp(num2str(recovered_bits))
