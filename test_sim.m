@@ -17,48 +17,67 @@ attenuation_fat = 85.11;
 attenuation_water = 741.31;
 
 % Tested Transmission Powers
-Ptx_sim = [10 100 300 500 700 900 1000 2000 3000];
+TRANSMIT_POWER = [10 100 200 300 400 500 600 700 800 900 1000 2000 3000]';
 
 %% END DEF
 
 % START SIM
 
-for ii = 1:length(Ptx_sim)
+FAT_SUCESS = zeros(size(TRANSMIT_POWER));
+WATER_SUCESS = zeros(size(TRANSMIT_POWER));
+
+for ii = 1:length(TRANSMIT_POWER)
     % Run simulation for Fat
-    [sucess_f, bits_f, t_f, B_f, M_f, N_f, D_f] = run_sim(bit_sequence, Ptx_sim(ii), max_noise_amp, attenuation_fat);
+    [sucess_f, bits_f, ~, B_f, M_f, N_f, D_f] = run_sim(bit_sequence, TRANSMIT_POWER(ii), max_noise_amp, attenuation_fat);
     
     % Run simulation for Water
-    [sucess_w, bits_w, t_w, B_w, M_w, N_w, D_w] = run_sim(bit_sequence, Ptx_sim(ii), max_noise_amp, attenuation_water);
+    [sucess_w, bits_w, t, B_w, M_w, N_w, D_w] = run_sim(bit_sequence, TRANSMIT_POWER(ii), max_noise_amp, attenuation_water);
+    
+    % Append to succes values
+    FAT_SUCESS(ii) = sucess_f;
+    WATER_SUCESS(ii) = sucess_w;
+    
+    % Plot Best and Worst Transmissions to show as figure
+    if (ii == 1) || (ii == length(TRANSMIT_POWER))
+        if ii == 1
+            figure(1)
+        else
+            figure(2)
+        end
+        
+        subplot 411
+        plot(t, B_f)
+        fatlines(1.5)
+        grid on
+        axis tight
+        ylim([-0.5 1.5]);
+        title('Original Bit Sequence')
+
+        subplot 412
+        plot(t, M_f)
+        fatlines(1.5)
+        grid on
+        axis tight
+        title('AM Transmission')
+
+        subplot 413
+        plot(t, N_f)
+        fatlines(1.5)
+        grid on
+        axis tight
+        title('AM Transmission Sequence After Noise And Attenuation')
+
+        subplot 414
+        plot(t, D_f)
+        fatlines(1.5)
+        grid on
+        axis tight
+        title('Recovered Bit Sequence after Demodulation')
+    end
 end
 
-%% Plot Best and Worst Transmissions to show as figure
+%% Create a table with the results
+res = table(TRANSMIT_POWER, FAT_SUCESS, WATER_SUCESS);
 
-figure(1)
-subplot 411
-plot(t, B)
-fatlines(1.5)
-grid on
-axis tight
-ylim([-1.5 1.5]);
-title('Original Bit Sequence')
-
-subplot 412
-plot(t, M)
-fatlines(1.5)
-grid on
-axis tight
-title('AM Bit Sequence')
-
-subplot 413
-plot(t, N)
-fatlines(1.5)
-grid on
-axis tight
-title('AM Bit Sequence After Noise + Attenuation')
-
-subplot 414
-plot(t, D)
-fatlines(1.5)
-grid on
-axis tight
-title('Recovered Bit Sequence after Demodulation')
+% Display the table
+disp(res)

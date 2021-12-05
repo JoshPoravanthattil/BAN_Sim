@@ -1,5 +1,3 @@
-close all; clear; clc;
-
 %% ECE 1150 Final Simulation
 % 12.04.2021
 % Andrew, Josh, Lucio
@@ -7,50 +5,76 @@ close all; clear; clc;
 % Simulation of signal transmisison through tissues of the human body (fat
 % and water).
 
+close all; clear; clc;
 %% CONSTANTS DEFINITIONS
+
+% Testing bit sequence
 bit_sequence = [0 1 1 0 1 0 1 1 0];
+
+% Constants
 max_noise_amp = 5.1;
 attenuation_fat = 85.11;
 attenuation_water = 741.31;
 
-Ptx_sim = [10 100 300 500
-%% END CHANGE
+% Tested Transmission Powers
+Ptx_sim = [10 100 200 300 400 500 600 700 800 900 1000 2000 3000];
 
-[sucess, bits, t, B, M, N, D] = run_sim(bit_sequence, Ptx, max_noise_amp, attenuation);
+%% END DEF
 
-% Plot Results
-subplot 411
-plot(t, B)
-fatlines(1.5)
-grid on
-axis tight
-ylim([-1.5 1.5]);
-title('Original Bit Sequence')
+% START SIM
 
-subplot 412
-plot(t, M)
-fatlines(1.5)
-grid on
-axis tight
-title('AM Bit Sequence')
+sucesses_f = zeros(size(Ptx_sim))';
+sucesses_w = zeros(size(Ptx_sim))';
 
-subplot 413
-plot(t, N)
-fatlines(1.5)
-grid on
-axis tight
-title('AM Bit Sequence After Noise + Attenuation')
+for ii = 1:length(Ptx_sim)
+    % Run simulation for Fat
+    [sucess_f, bits_f, t_f, B_f, M_f, N_f, D_f] = run_sim(bit_sequence, Ptx_sim(ii), max_noise_amp, attenuation_fat);
+    
+    % Run simulation for Water
+    [sucess_w, bits_w, t_w, B_w, M_w, N_w, D_w] = run_sim(bit_sequence, Ptx_sim(ii), max_noise_amp, attenuation_water);
+    
+    % Append to succes values
+    sucesses_f(ii) = sucess_f;
+    sucesses_w(ii) = sucess_w;
+    
+    % Plot Best and Worst Transmissions to show as figure
+    if (ii == 1) || (ii == length(Ptx_sim))
+        if ii == 1
+            figure(1)
+        else
+            figure(2)
+        end
+        
+        subplot 411
+        plot(t, B)
+        fatlines(1.5)
+        grid on
+        axis tight
+        ylim([-1.5 1.5]);
+        title('Original Bit Sequence')
 
-subplot 414
-plot(t, D)
-fatlines(1.5)
-grid on
-axis tight
-title('Recovered Bit Sequence after Demodulation')
+        subplot 412
+        plot(t, M)
+        fatlines(1.5)
+        grid on
+        axis tight
+        title('AM Bit Sequence')
 
-% Print comparison to input and output
-disp('Input Bit: ')
-disp(num2str(bits(:, 1)'))
-disp('Output Bit: ')
-disp(num2str(bits(:, 2)'))
-disp(['Sucess: ', num2str(sucess)])
+        subplot 413
+        plot(t, N)
+        fatlines(1.5)
+        grid on
+        axis tight
+        title('AM Bit Sequence After Noise + Attenuation')
+
+        subplot 414
+        plot(t, D)
+        fatlines(1.5)
+        grid on
+        axis tight
+        title('Recovered Bit Sequence after Demodulation')
+    end
+end
+
+%% Plot Best and Worst Transmissions to show as figure
+
