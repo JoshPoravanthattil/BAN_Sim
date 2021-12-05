@@ -61,8 +61,7 @@ for ii = 1:length(TRANSMIT_POWER)
         end
         
         subplot 411
-        plot(t, B_f)
-        fatlines(1.5)
+        plot(t, B_f, 'LineWidth', 1.5)
         grid on
         axis tight
         ylim([-0.5 1.5]);
@@ -71,8 +70,7 @@ for ii = 1:length(TRANSMIT_POWER)
         ylabel('Bit Value (a.u.)')
 
         subplot 412
-        plot(t, M_f)
-        fatlines(1.5)
+        plot(t, M_f, 'LineWidth', 1.5)
         grid on
         axis tight
         title('AM Transmission')
@@ -80,8 +78,7 @@ for ii = 1:length(TRANSMIT_POWER)
         ylabel('Power (mW)')
 
         subplot 413
-        plot(t, N_f)
-        fatlines(1.5)
+        plot(t, N_f, 'LineWidth', 1.5)
         grid on
         axis tight
         title('AM Transmission Sequence After Noise And Attenuation')
@@ -89,8 +86,7 @@ for ii = 1:length(TRANSMIT_POWER)
         ylabel('Power (mW)')
 
         subplot 414
-        plot(t, D_f)
-        fatlines(1.5)
+        plot(t, D_f, 'LineWidth', 1.5)
         grid on
         axis tight
         title('Recovered Bit Sequence after Demodulation')
